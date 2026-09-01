@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Santa Fe Clan — Калькулятор зарплат</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@300;400;600;700&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #0d0a08;
+    --bg-card: #1a1410;
+    --gold: #d4a017;
+    --gold-bright: #f0c040;
+    --red: #8b0000;
+    --red-bright: #c41e3a;
+    --green: #1a5c1a;
+    --text-light: #e8d5b7;
+    --text-dim: #a09080;
+    --border: #3a2a1a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Oswald', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 30%, rgba(139,0,0,0.15) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 70%, rgba(26,92,26,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(212,160,23,0.05) 0%, transparent 70%);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(212,160,23,0.015) 2px, rgba(212,160,23,0.015) 4px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+
+  .header { text-align: center; margin-bottom: 50px; padding-top: 20px; }
+  .header-icon { font-size: 64px; margin-bottom: 10px; filter: drop-shadow(0 0 15px rgba(212,160,23,0.4)); }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px; letter-spacing: 6px; color: var(--gold-bright);
+    text-shadow: 2px 2px 0 var(--red), 4px 4px 8px rgba(0,0,0,0.8);
+    line-height: 1;
+  }
+  .header .subtitle {
+    font-family: 'Special Elite', monospace; font-size: 14px;
+    color: var(--text-dim); margin-top: 12px; letter-spacing: 3px; text-transform: uppercase;
+  }
+  .header .divider { width: 200px; height: 2px; margin: 20px auto; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+
+  .card {
+    background: var(--bg-card); border: 2px solid var(--border); border-radius: 4px;
+    padding: 35px 30px; margin-bottom: 30px;
+    box-shadow: 0 0 0 1px rgba(212,160,23,0.1), 0 10px 40px rgba(0,0,0,0.6), inset 0 0 30px rgba(0,0,0,0.3);
+    position: relative;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 8px; left: 8px; right: 8px; bottom: 8px;
+    border: 1px solid rgba(212,160,23,0.15); border-radius: 2px; pointer-events: none;
+  }
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 3px;
+    color: var(--gold); text-align: center; margin-bottom: 30px; position: relative; z-index: 1;
+  }
+
+  .slider-group { margin-bottom: 35px; position: relative; z-index: 1; }
+  .slider-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  .slider-label .label-text { font-size: 17px; font-weight: 400; color: var(--text-light); letter-spacing: 1px; }
+  .slider-label .label-value {
+    font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--gold-bright);
+    text-shadow: 0 0 10px rgba(212,160,23,0.3); line-height: 1;
+  }
+  .slider-label .label-value .unit { font-size: 14px; color: var(--text-dim); font-family: 'Oswald', sans-serif; margin-left: 4px; }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 8px;
+    background: linear-gradient(90deg, var(--red) 0%, var(--gold) 100%);
+    border-radius: 4px; outline: none; border: 1px solid var(--border);
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 26px; height: 26px;
+    background: var(--gold-bright); border: 3px solid var(--bg-dark); border-radius: 50%;
+    cursor: pointer; box-shadow: 0 0 10px rgba(212,160,23,0.5); transition: transform 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  input[type="range"]::-moz-range-thumb {
+    width: 26px; height: 26px; background: var(--gold-bright); border: 3px solid var(--bg-dark);
+    border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(212,160,23,0.5);
+  }
+  .slider-range { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--text-dim); font-family: 'Special Elite', monospace; }
+
+  .rate-info {
+    text-align: center; font-family: 'Special Elite', monospace; font-size: 14px;
+    color: var(--text-dim); margin-bottom: 25px; padding: 10px;
+    border-top: 1px dashed var(--border); border-bottom: 1px dashed var(--border);
+    position: relative; z-index: 1;
+  }
+  .rate-info .rate-value { color: var(--gold-bright); font-size: 18px; font-weight: bold; }
+
+  .result-box {
+    text-align: center; padding: 25px;
+    background: linear-gradient(135deg, rgba(139,0,0,0.2), rgba(212,160,23,0.1));
+    border: 2px solid var(--gold); border-radius: 4px; position: relative; z-index: 1;
+    box-shadow: 0 0 20px rgba(212,160,23,0.15);
+  }
+  .result-label {
+    font-family: 'Special Elite', monospace; font-size: 14px; color: var(--text-dim);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .result-value {
+    font-family: 'Bebas Neue', sans-serif; font-size: 64px; color: var(--gold-bright);
+    text-shadow: 0 0 20px rgba(212,160,23,0.4), 2px 2px 0 var(--red);
+    line-height: 1; letter-spacing: 2px;
+  }
+  .result-value .currency { font-size: 32px; color: var(--text-light); }
+  .result-breakdown { margin-top: 12px; font-size: 14px; color: var(--text-dim); font-family: 'Special Elite', monospace; }
+
+  .contacts { display: flex; flex-direction: column; gap: 15px; position: relative; z-index: 1; }
+  .contact-btn {
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    padding: 18px 25px; text-decoration: none; font-family: 'Oswald', sans-serif;
+    font-size: 20px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+    border-radius: 4px; transition: all 0.2s; border: 2px solid; position: relative;
+  }
+  .contact-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0,0,0,0.5); }
+  .contact-btn:active { transform: translateY(0); }
+  .contact-btn.tg { background: linear-gradient(135deg, #2a2a2a, #1a1a1a); border-color: #0088cc; color: #0088cc; }
+  .contact-btn.tg:hover { background: linear-gradient(135deg, #0088cc, #005577); color: #fff; box-shadow: 0 5px 20px rgba(0,136,204,0.3); }
+  .contact-btn.messenger { background: linear-gradient(135deg, #2a2a2a, #1a1a1a); border-color: #0084ff; color: #0084ff; }
+  .contact-btn.messenger:hover { background: linear-gradient(135deg, #0084ff, #005cb3); color: #fff; box-shadow: 0 5px 20px rgba(0,132,255,0.3); }
+  .contact-btn .icon { font-size: 28px; }
+
+  .footer { text-align: center; margin-top: 40px; font-family: 'Special Elite', monospace; font-size: 12px; color: var(--text-dim); letter-spacing: 2px; }
+  .footer .skull { font-size: 24px; margin-bottom: 8px; opacity: 0.5; }
+
+  @media (max-width: 500px) {
+    .header h1 { font-size: 52px; }
+    .result-value { font-size: 48px; }
+    .card { padding: 25px 18px; }
+    .slider-label .label-value { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-icon">💀</div>
+    <h1>SANTA FE CLAN</h1>
+    <div class="divider"></div>
+    <div class="subtitle">Семья · Бизнес с уважением</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💰 Калькулятор зарплат</div>
+
+    <div class="slider-group">
+      <div class="slider-label">
+        <span class="label-text">Кладов в день</span>
+        <span class="label-value"><span id="kladsValue">5</span><span class="unit">шт</span></span>
+      </div>
+      <input type="range" id="kladsSlider" min="3" max="20" value="5" step="1">
+      <div class="slider-range"><span>3</span><span>20</span></div>
+    </div>
+
+    <div class="slider-group">
+      <div class="slider-label">
+        <span class="label-text">Дней работы в месяц</span>
+        <span class="label-value"><span id="daysValue">15</span><span class="unit">дн</span></span>
+      </div>
+      <input type="range" id="daysSlider" min="5" max="20" value="15" step="1">
+      <div class="slider-range"><span>5</span><span>20</span></div>
+    </div>
+
+    <div class="rate-info">
+      Ставка за клад: <span class="rate-value">1 350 ₽</span>
+    </div>
+
+    <div class="result-box">
+      <div class="result-label">Твоя зарплата</div>
+      <div class="result-value"><span id="totalResult">101 250</span> <span class="currency">₽</span></div>
+      <div class="result-breakdown" id="breakdown">5 кладов × 15 дней × 1 350 ₽</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📞 Контакты</div>
+    <div class="contacts">
+      <a href="https://t.me/Viximas" class="contact-btn tg" target="_blank" rel="noopener">
+        <span class="icon">✈️</span>
+        <span>Telegram — @Viximas</span>
+      </a>
+      <a href="https://m.me/" class="contact-btn messenger" target="_blank" rel="noopener">
+        <span class="icon">💬</span>
+        <span>Messenger</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="skull">💀</div>
+    <div>SANTA FE CLAN © 2026 · Сделано с уважением</div>
+  </div>
+
+</div>
+
+<script>
+  const kladsSlider = document.getElementById('kladsSlider');
+  const daysSlider = document.getElementById('daysSlider');
+  const kladsValue = document.getElementById('kladsValue');
+  const daysValue = document.getElementById('daysValue');
+  const totalResult = document.getElementById('totalResult');
+  const breakdown = document.getElementById('breakdown');
+
+  const RATE = 1350;
+
+  function formatNumber(num) {
+    return num.toLocaleString('ru-RU');
+  }
+
+  function calculate() {
+    const klads = parseInt(kladsSlider.value);
+    const days = parseInt(daysSlider.value);
+    const total = klads * days * RATE;
+
+    kladsValue.textContent = klads;
+    daysValue.textContent = days;
+    totalResult.textContent = formatNumber(total);
+    breakdown.textContent = `${klads} кладов × ${days} дней × ${formatNumber(RATE)} ₽`;
+  }
+
+  kladsSlider.addEventListener('input', calculate);
+  daysSlider.addEventListener('input', calculate);
+  calculate();
+</script>
+
+</body>
+</html>
